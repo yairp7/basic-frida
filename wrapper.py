@@ -6,7 +6,10 @@ import os
 app = sys.argv[1] 
 
 def message_callback(message, data):
-	print str(message['payload'])
+	if 'payload' in message:
+		print str(message['payload'])
+	else:
+		print message
 
 # Read our code file
 frida_code = None

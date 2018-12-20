@@ -15,60 +15,48 @@
 */
 function monitorFunction(package_name, class_name, func_name, func_args) {
     try {
-        const full_class_name = package_name + '.' + class_name;
-        const cls = Java.use(full_class_name);
+        const cls = Java.use(package_name + '.' + class_name);
         var should_hook = true;
-        var overloads = cls[func_name].overloads;
-        for (var index in overloads) {
-            var method_overload = overloads[index];
+        for (var index in cls[func_name].overloads) {
+            var method_overload = cls[func_name].overloads[index];
             if (method_overload.hasOwnProperty('argumentTypes')) {
                 var msg = "Hooking class: " + class_name + " Function: " + func_name;
                 var args_types = [];
                 var param_index = 0;
-                for (j in method_overload.argumentTypes) {
-                    args_types.push(method_overload.argumentTypes[j].className);
+                for (j in method_overload.argumentTypes) { 
+                    args_types.push(method_overload.argumentTypes[j].className); 
                 }
-
                 // Check if we are looking for a specific overload
                 if(func_args != undefined) {
                     should_hook = false;
                     if(method_overload.argumentTypes.length == func_args.length) {
                         var num_of_same_args = 0;
                         for (var a in method_overload.argumentTypes) {
-                            if(method_overload.argumentTypes[a] == func_args[a]) {
+                            if(method_overload.argumentTypes[a] == func_args[a]) 
                                 num_of_same_args++;
-                            }
-                            else {
-                                break;
-                            }
+                            else break;
                         }
-                        if(num_of_same_args = func_args.length) {
-                            should_hook = true;
-                        }
+                        if(num_of_same_args = func_args.length) should_hook = true;
                     }
                 }
-
                 if(should_hook) {
                     send(msg + '(' + args_types.toString() + ')\n');
                     try {
                         method_overload.implementation = function () {
                             var args = [].slice.call(arguments);
                             var result = this[func_name].apply(this, args);
-                            var result_string = typeof result.toString  === 'function' ? result.toString() : result;
-                            var msg = func_name + '(' + args.join(', ') + ') => ' + result_string + '\n';
-                            send(msg);
+                            var rstr = result.toString();
+                            send(func_name+'('+args.join(', ')+') => Result: '+rstr+'\n');
                             return result;
                         }
-                    }
-                    catch(e) { 
-                        send("ERROR: " + e); 
-                    }
+                    } 
+                    catch(e) { send("ERROR: " + e); }
                 }
             }
         }
     }   
-    catch(e) {
-        send("Failed hooking class: " + class_name + " Function: " + func_name + "\n" + ' -> ' + e);
+    catch(e) { 
+        send(e); 
     }
 }
 
@@ -103,7 +91,8 @@ function monitorClass(package_name, class_name) {
 
 if (Java.available) {
     Java.perform(function() {
-        // monitorFunction('<package-name>', '<class-name>', '<method-name>');
+        monitorFunction('org.json', 'JSONObject', 'toString');
         // monitorClass('<package-name>', '<class-name>');
+        // monitorClass('org.json', 'JSONObject');
     });
 }
