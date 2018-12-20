@@ -54,7 +54,8 @@ function monitorFunction(package_name, class_name, func_name, func_args) {
                         method_overload.implementation = function () {
                             var args = [].slice.call(arguments);
                             var result = this[func_name].apply(this, args);
-                            var msg = func_name + '(' + args.join(', ') + ') => ' + result + '\n';
+                            var result_string = typeof result.toString  === 'function' ? result.toString() : result;
+                            var msg = func_name + '(' + args.join(', ') + ') => ' + result_string + '\n';
                             send(msg);
                             return result;
                         }

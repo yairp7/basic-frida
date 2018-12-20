@@ -1,15 +1,16 @@
 import frida
 import sys
+import os
 
-# Provide the application’s package name
+# Provide the application package name
 app = sys.argv[1] 
 
-def message_callback(message):
-	print message
+def message_callback(message, data):
+	print str(message['payload'])
 
 # Read our code file
 frida_code = None
-with open('frida_code.js') as f: 
+with open(os.path.dirname(os.path.realpath(__file__)) + '/frida_script.js') as f: 
 	frida_code = f.read()
 
 if frida_code:
@@ -31,3 +32,5 @@ if frida_code:
 					script.on('message', message_callback) 
 					# Load the script into frida
 			        script.load()
+			     
+sys.stdin.read()
