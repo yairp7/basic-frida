@@ -91,8 +91,7 @@ function monitorClass(package_name, class_name) {
 
 if (Java.available) {
     Java.perform(function() {
-        monitorFunction('org.json', 'JSONObject', 'toString');
+        // monitorFunction('<package-name>', '<class-name>', '<func-name>');
         // monitorClass('<package-name>', '<class-name>');
-        // monitorClass('org.json', 'JSONObject');
     });
 }
